@@ -1,8 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #edf7f7;
 }
 
 @theme inline {
@@ -12,11 +11,9 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@theme {
+  --color-jakbutton: #ff3e1a;
+  --color-jakbutton-hover: #e62200;
 }
 
 body {
