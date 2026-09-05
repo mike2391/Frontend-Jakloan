@@ -1,19 +1,36 @@
 @import "tailwindcss";
+@import "flowbite-react/plugin/tailwindcss";
+@source "../.flowbite-react/class-list.json";
 
 :root {
   --background: #edf7f7;
+  --foreground: #172b36;
+  --border: #d7e1e5;
+  --primary: #1a4048;
+  --primary-foreground: #ffffff;
+  --muted: #e4eef0;
+  --muted-foreground: #60737c;
+  --ring: #1a4048;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-ring: var(--ring);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-poppins: var(--font-poppins);
 }
 
 @theme {
   --color-jakbutton: #ff3e1a;
   --color-jakbutton-hover: #e62200;
+  --color-jakloan-header: #1a4048;
 }
 
 body {
