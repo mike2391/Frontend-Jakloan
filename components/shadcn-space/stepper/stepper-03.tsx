@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { ArrowRight, Check, ChevronLeft, ChevronRight, Home, Settings, Upload, User, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -27,7 +28,7 @@ type FormValues = Record<string, string>;
 
 function InputField({ field, value, onChange }: { field: Field; value: string; onChange: (value: string) => void }) {
   const inputClassName =
-    "flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20";
+    "flex h-10 w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20";
 
   return (
     <div className="space-y-2 text-left">
@@ -157,6 +158,7 @@ const fixedRateByPeriod: Record<string, string> = {
 };
 
 export default function Stepper03() {
+  const router = useRouter();
   const [activeStep, setActiveStep] = useState(0);
   const [formValues, setFormValues] = useState<FormValues>({
     "interest-type": "fixed",
@@ -173,7 +175,10 @@ export default function Stepper03() {
   const handleNext = () => {
     if (activeStep < steps.length - 1) {
       setActiveStep((prev) => prev + 1);
+      return;
     }
+
+    router.push("/result-kpr");
   };
 
   const handleBack = () => {
@@ -375,8 +380,8 @@ export default function Stepper03() {
   );
 
   return (
-    <div className="mx-auto w-9/10 m-5 mt-12">
-      <div className="rounded-xl border border-border bg-background p-8 flex flex-col gap-8">
+    <div className=" mt-12">
+      <div className="rounded-xl border border-border bg-white p-8 flex flex-col gap-8">
         <div className="relative">
           <div className="absolute top-5 h-0.5 bg-border" style={{ left: "12.5%", right: "12.5%" }} />
           <motion.div
@@ -521,8 +526,8 @@ export default function Stepper03() {
             <p className="text-sm text-muted-foreground">
               Step {activeStep + 1} of {steps.length}
             </p>
-            <Button type="submit" disabled={activeStep === steps.length - 1} className="cursor-pointer">
-              Continue
+            <Button type="submit" className="cursor-pointer">
+              {activeStep === steps.length - 1 ? "Lihat Hasil" : "Continue"}
               <ChevronRight />
             </Button>
           </div>
