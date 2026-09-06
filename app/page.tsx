@@ -6,7 +6,7 @@ import Stepper03 from "@/components/shadcn-space/stepper/stepper-03";
 
 export default function Home() {
   return (
-    <div className="h-screen">
+    <div className=" mt-14">
       <header className="fixed top-0 left-0 z-50 py-5 bg-white w-full text-center text-black flex items-center">
         <div className="w-9/10 m-auto flex justify-between">
           <Image src="/jakloan-logo.png" width={1920} height={1080} alt="jakloan logo" className="h-10 w-auto" />

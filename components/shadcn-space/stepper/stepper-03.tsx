@@ -375,7 +375,7 @@ export default function Stepper03() {
   );
 
   return (
-    <div className="mx-auto w-9/10 m-5">
+    <div className="mx-auto w-9/10 m-5 mt-12">
       <div className="rounded-xl border border-border bg-background p-8 flex flex-col gap-8">
         <div className="relative">
           <div className="absolute top-5 h-0.5 bg-border" style={{ left: "12.5%", right: "12.5%" }} />
