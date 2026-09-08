@@ -11,9 +11,6 @@ importers:
       '@radix-ui/react-slider':
         specifier: ^1.4.7
         version: 1.4.7(@types/react-dom@19.2.5(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      flowbite-react:
-        specifier: ^0.12.17
-        version: 0.12.17(@emnapi/core@1.10.0)(@emnapi/runtime@1.11.3)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(tailwindcss@4.3.3)
       lucide-react:
         specifier: ^1.41.0
         version: 1.41.0(react@19.2.8)
@@ -1495,14 +1492,6 @@ packages:
 
   flatted@3.4.4:
     resolution: {integrity: sha512-5+ybhBZANEJxaH3X5evAFatUxLfEHSr7n6kYJ+1Qd0mUqr4eu9gIf6GDbWHf8RJijHrjjO8G+la14SlL2SeS1Q==}
-
-  flowbite-react@0.12.17:
-    resolution: {integrity: sha512-En0zhGePac4hFWdikoyor0dQlUM8PbLPvGvFGovssDcw82pdjp9XLg3+bAaiy+83/7vEQY6Ajjnzbrsw4ru/Cg==}
-    hasBin: true
-    peerDependencies:
-      react: ^18 || ^19
-      react-dom: ^18 || ^19
-      tailwindcss: ^3 || ^4
 
   for-each@0.3.5:
     resolution: {integrity: sha512-dKx12eRCVIzqCxFGplyFKJMPvLEWgmNtUrpTiJIR5u97zEhRG8ySrtboPHZXx7daLxQVrl643cTzbab2tkQjxg==}
@@ -3853,27 +3842,6 @@ snapshots:
 
   flatted@3.4.4: {}
 
-  flowbite-react@0.12.17(@emnapi/core@1.10.0)(@emnapi/runtime@1.11.3)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(tailwindcss@4.3.3):
-    dependencies:
-      '@floating-ui/core': 1.7.4
-      '@floating-ui/react': 0.27.17(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@iarna/toml': 2.2.5
-      chokidar: 4.0.3
-      comment-json: 4.5.1
-      debounce: 3.0.0
-      deepmerge-ts: 7.1.5
-      klona: 2.0.6
-      magic-string: 0.30.21
-      oxc-parser: 0.112.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.11.3)
-      package-manager-detector: 1.6.0
-      react: 19.2.8
-      react-dom: 19.2.8(react@19.2.8)
-      tailwind-merge-v2: tailwind-merge@2.6.1
-      tailwind-merge-v3: tailwind-merge@3.4.0
-      tailwindcss: 4.3.3
-    transitivePeerDependencies:
-      - '@emnapi/core'
-      - '@emnapi/runtime'
 
   for-each@0.3.5:
     dependencies:
