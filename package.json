@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@derpdaderp/chartkit": "^0.4.1",
     "@radix-ui/react-slider": "^1.4.7",
     "lucide-react": "^1.41.0",
     "motion": "^13.2.0",

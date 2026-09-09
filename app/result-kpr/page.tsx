@@ -2,23 +2,27 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import {
-  ArrowRight,
-  CalendarDays,
-  ChevronDown,
-  CircleAlert,
-  CircleHelp,
-  Info,
-  ClipboardList,
-  Home,
-  RotateCcw,
-  Save,
-  TrendingUp,
-  WalletCards,
-} from "lucide-react";
+import { ArrowRight, ChevronDown, CircleAlert, CircleHelp, Info, ClipboardList, Home, RotateCcw, Save, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { LineChart } from "@derpdaderp/chartkit";
 import { Button } from "@/components/ui/button";
 import Header from "../Components/Header";
+import Chart from "../Components/Chart";
+import StressCell, { type StressTheme } from "../Components/StressCell";
+import StressScenarioModal from "../Components/StressScenarioModal";
+
+// const data = [
+//   { time: "09:00", p50: 1.5, p95: 2.1, p99: 3.2 },
+//   { time: "10:00", p50: 1.8, p95: 2.4, p99: 3.8 },
+//   { time: "11:00", p50: 1.6, p95: 2.2, p99: 3.5 },
+//   // ...more data points
+// ];
+
+// const series = [
+//   { key: "p50", label: "p50", displayValue: "1.8 ms" },
+//   { key: "p95", label: "p95", displayValue: "2.3 ms" },
+//   { key: "p99", label: "p99", displayValue: "3.5 ms" },
+// ];
 
 function Metric({ label, value, detail }: { label: string; value: string; detail?: string }) {
   return (
@@ -61,10 +65,8 @@ function SectionRow({
 }
 
 export default function ResultKPRPage() {
-  const [openSection, setOpenSection] = useState(1);
   const [saved, setSaved] = useState(false);
-
-  const toggleSection = (section: number) => setOpenSection((current) => (current === section ? 0 : section));
+  const [selectedStressCell, setSelectedStressCell] = useState<StressTheme | null>(null);
 
   return (
     <main className="min-h-screen w-9/10 mx-auto pb-24 font-poppins text-slate-900 mt-14">
@@ -118,31 +120,28 @@ export default function ResultKPRPage() {
                 <p className="mt-1 text-sm leading-4 text-slate-500">
                   Berdasarkan data yang Anda masukkan, estimasi cicilan masih dalam rentang yang relatif sesuai.
                 </p>
-                <button type="button" className="mt-2 text-[10px] font-semibold text-slate-700 underline">
-                  Lihat Rekomendasi →
-                </button>
               </div>
             </div>
           </div>
-          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-            <p className="text-base font-bold">Income to Expense Ratio</p>
-            <div className="mt-3 flex items-center gap-5">
-              <div
-                className="relative flex size-28 shrink-0 items-center justify-center rounded-full bg-[conic-gradient(#ef2b1f_0deg_144deg,#e2e8f0_144deg_360deg)]"
-                aria-label="Expense 40 percent, saving 60 percent">
-                <div className="flex size-18 items-center justify-center rounded-full bg-white text-center">
-                  <span className="text-lg font-bold text-slate-900">40 / 60</span>
+          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm flex flex-row">
+            <Chart
+              title="Income to Expense Ratio"
+              description="Expense and income distribution"
+              data={[
+                { source: "Expense", visits: 40 },
+                { source: "Income", visits: 60 },
+              ]}
+              centerContent={
+                <div className="text-center">
+                  <div className="text-lg font-bold">40 / 60</div>
+                  <div className="text-xs text-slate-500">Expense / Income</div>
                 </div>
-              </div>
-              <div className="space-y-2 text-sm text-slate-500">
-                <div className="flex items-center gap-2">
-                  <span className="size-2.5 rounded-full bg-[#ef2b1f]" /> Expense 40%
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="size-2.5 rounded-full bg-slate-200" /> Saving 60%
-                </div>
-              </div>
-            </div>
+              }
+            />
+            <p className="ml-4 self-center text-slate-500 text-sm">
+              Rasio penghasilan dan pengeluaran anda cukup baik. Bila anda mengambil program KPR ini, anda tidak berisiko terkena &quot;Credit
+              Default&quot;
+            </p>
           </div>
         </div>
 
@@ -167,8 +166,7 @@ export default function ResultKPRPage() {
 
         <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold">Analisis Risiko</h3>
-            <CircleHelp className="size-3 text-slate-400" />
+            <h3 className="text-base font-bold">Analisis Risiko</h3>
           </div>
           <div className="mt-3 grid gap-3 sm:grid-cols-3">
             <RiskCard title="Risiko Affordability" status="Rendah" color="emerald" />
@@ -179,29 +177,40 @@ export default function ResultKPRPage() {
 
         <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold">Stress Test Suku Bunga (Setelah Masa Fixed)</h3>
-            <button type="button" className="text-[10px] font-bold text-[#ef2b1f]">
-              Lihat Proyeksi Per Tahun →
-            </button>
+            <h3 className="text-base font-bold">Skenario Cicilan Berdasarkan Jenis Risiko</h3>
           </div>
-          <div className="mt-3 grid gap-2 sm:grid-cols-4">
-            <StressCell label="Skenario" value="Fixed (3 Tahun)" />
-            <StressCell label="Suku Bunga" value="5,25%" />
-            <StressCell label="Floating +1%" value="9,50%" />
-            <StressCell label="Floating +2%" value="10,50%" />
+          {/* <div className="mt-3 overflow-hidden rounded-md border border-slate-200 bg-slate-950 p-3">
+            <LineChart data={data} series={series} theme="sunset" unit="ms" />
+          </div> */}
+          <div className="mt-3 grid gap-2 sm:grid-cols-3">
+            <StressCell
+              value="Risiko Rendah"
+              themeColor="green"
+              description="analisa risiko bila kondisi bunga floating tidak berubah terlalu agresif"
+              onClick={() => setSelectedStressCell("green")}
+            />
+            <StressCell
+              value="Risiko Sedang"
+              themeColor="yellow"
+              description="analisa risiko bila kondisi bunga floating naik secara normal"
+              onClick={() => setSelectedStressCell("yellow")}
+            />
+            <StressCell
+              value="Risiko Tinggi"
+              themeColor="red"
+              description="analisa risiko bila kondisi bunga floating berubah dengan agresif karena kondisi ekonomi negara buruk"
+              onClick={() => setSelectedStressCell("red")}
+            />
           </div>
         </div>
 
-        <div className="flex items-center justify-between rounded-lg border border-amber-100 bg-amber-50 px-4 py-3">
+        <div className="flex items-center justify-between rounded-lg border border-amber-200 bg-amber-100 px-4 py-3">
           <div className="flex gap-3">
-            <Info className="mt-0.5 size-4 text-amber-500" />
             <div>
-              <p className="text-xs font-bold">Financial Insight</p>
-              <p className="mt-1 text-[10px] text-slate-600">Pertimbangkan menaikkan DP untuk menurunkan cicilan bulanan.</p>
-              <p className="text-[10px] text-slate-600">Pastikan dana darurat minimal 6x cicilan untuk menghadapi kondisi tak terduga.</p>
+              <p className="text-base font-bold">Financial Insight (AI Assistant)</p>
+              <p className="mt-1 text-sm text-slate-600">Pertimbangkan menaikkan DP untuk menurunkan cicilan bulanan.</p>
             </div>
           </div>
-          <TrendingUp className="hidden size-10 text-amber-400 sm:block" />
         </div>
       </section>
 
@@ -223,6 +232,8 @@ export default function ResultKPRPage() {
           </div>
         </div>
       </footer>
+
+      {selectedStressCell && <StressScenarioModal themeColor={selectedStressCell} onClose={() => setSelectedStressCell(null)} />}
     </main>
   );
 }
@@ -268,24 +279,15 @@ function SummaryCard({ label, value, detail, accent }: { label: string; value: s
 function RiskCard({ title, status, color }: { title: string; status: string; color: "emerald" | "orange" | "amber" }) {
   const styles = { emerald: "bg-emerald-50 text-emerald-600", orange: "bg-orange-50 text-orange-500", amber: "bg-amber-50 text-amber-500" };
   return (
-    <div className="rounded-md border border-slate-100 p-3">
-      <div className="flex items-center gap-2 text-[10px] font-semibold text-slate-600">
+    <div className="rounded-md border border-slate-200 p-3">
+      <div className="flex items-center gap-2 text-sm font-semibold text-slate-600">
         <span className={cn("flex size-5 items-center justify-center rounded-full", styles[color])}>
           <CircleAlert className="size-3" />
         </span>
         {title}
       </div>
-      <p className={cn("mt-3 text-xs font-bold", styles[color].split(" ")[1])}>{status}</p>
-      <p className="mt-1 text-[9px] leading-4 text-slate-400">Terdapat potensi perubahan yang perlu diperhatikan.</p>
-    </div>
-  );
-}
-
-function StressCell({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-md bg-slate-50 p-3">
-      <p className="text-[9px] text-slate-400">{label}</p>
-      <p className="mt-2 text-[11px] font-bold text-slate-700">{value}</p>
+      <p className={cn("mt-3 text-sm font-bold", styles[color].split(" ")[1])}>{status}</p>
+      <p className="mt-1 text-sm leading-4 text-slate-400">Terdapat potensi perubahan yang perlu diperhatikan.</p>
     </div>
   );
 }
