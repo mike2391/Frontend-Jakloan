@@ -49,13 +49,15 @@ function InputField({
   field,
   value,
   onChange,
+  disabled = false,
 }: {
   field: Field;
   value: string;
   onChange: (value: string) => void;
+  disabled?: boolean;
 }) {
   const inputClassName =
-    "flex h-10 w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20";
+    "flex h-10 w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-muted/40 disabled:text-muted-foreground disabled:opacity-80";
 
   return (
     <div className="space-y-2 text-left">
@@ -70,6 +72,7 @@ function InputField({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           required={field.required === true}
+          disabled={disabled}
           className={inputClassName}
         >
           <option value="" disabled>
@@ -90,6 +93,7 @@ function InputField({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           required={field.required === true}
+          disabled={disabled}
           className={inputClassName}
         />
       )}
@@ -258,6 +262,25 @@ export default function Stepper03() {
 
   const progress = activeStep / (steps.length - 1);
 
+  useEffect(() => {
+    setErrorMessage(null);
+  }, [activeStep]);
+
+  const selectedProperty =
+    properties.find((property) => String(property.id) === propertyId) ?? null;
+
+  useEffect(() => {
+    if (!selectedProperty) return;
+
+    setFormValues((prev) => ({
+      ...prev,
+      "property-price": String(selectedProperty.price),
+      "property-status": selectedProperty.status,
+      "property-type": selectedProperty.propertyTypeName,
+      "property-location": selectedProperty.city,
+    }));
+  }, [selectedProperty]);
+
   const handleNext = async () => {
     setErrorMessage(null);
     setIsLoading(true);
@@ -330,6 +353,7 @@ export default function Stepper03() {
   };
 
   const handleBack = () => {
+    setErrorMessage(null);
     setActiveStep((prev) => Math.max(0, prev - 1));
   };
 
@@ -337,7 +361,9 @@ export default function Stepper03() {
     setFormValues((prev) => ({ ...prev, [fieldId]: value }));
   };
 
-  const propertyPrice = Number(formValues["property-price"] ?? 0);
+  const propertyPrice = selectedProperty
+    ? selectedProperty.price
+    : Number(formValues["property-price"] ?? 0);
   const downPaymentPercentage = Number(
     formValues["down-payment-percentage"] ?? 20,
   );
@@ -471,8 +497,8 @@ export default function Stepper03() {
                 id: "property-location",
                 label: "Lokasi",
                 placeholder: "",
-                options: [property.city],
               }}
+              disabled
               value={property.city}
               onChange={() => undefined}
             />
@@ -493,6 +519,7 @@ export default function Stepper03() {
               }}
               value={property.status}
               onChange={() => undefined}
+              disabled
             />
           </div>
         ))}

@@ -1,16 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   ArrowRight,
   CalendarDays,
   ChevronDown,
   CircleAlert,
   CircleHelp,
-  Info,
   ClipboardList,
   Home,
+  Info,
   RotateCcw,
   Save,
   TrendingUp,
@@ -18,7 +18,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { getSimulation, type Simulation } from "@/lib/loan-simulation-api";
+import StressScenarioModal from "../Components/StressScenarioModal";
+import type { StressTheme } from "../Components/StressCell";
 
 function Metric({
   label,
@@ -79,31 +80,11 @@ function SectionRow({
 export default function ResultKPRPage() {
   const [openSection, setOpenSection] = useState(1);
   const [saved, setSaved] = useState(false);
-  const [simulation, setSimulation] = useState<Simulation | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  useEffect(() => {
-    const sessionId = new URLSearchParams(window.location.search).get(
-      "sessionId",
-    );
-    if (!sessionId) {
-      setErrorMessage("Session simulasi tidak ditemukan.");
-      return;
-    }
-
-    getSimulation(sessionId)
-      .then(setSimulation)
-      .catch((error: Error) => setErrorMessage(error.message));
-  }, []);
+  const [selectedStressCell, setSelectedStressCell] =
+    useState<StressTheme | null>(null);
 
   const toggleSection = (section: number) =>
     setOpenSection((current) => (current === section ? 0 : section));
-  const result = simulation?.result;
-  const financing = simulation?.financing;
-  const profile = simulation?.customerProfile;
-  const property = simulation?.property;
-  const formatCurrency = (value: number | null | undefined) =>
-    value == null ? "-" : `Rp${new Intl.NumberFormat("id-ID").format(value)}`;
 
   return (
     <main className="min-h-screen bg-[#f7f9fb] pb-24 font-poppins text-slate-900">
@@ -159,11 +140,6 @@ export default function ResultKPRPage() {
       </section>
 
       <div className="mx-auto grid max-w-360 gap-4 px-3 py-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.18fr)]">
-        {errorMessage && (
-          <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 lg:col-span-2">
-            {errorMessage}
-          </div>
-        )}
         <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
           <div className="border-b border-slate-200 px-5 py-4">
             <div className="flex items-center gap-2 text-sm font-bold">
@@ -172,43 +148,30 @@ export default function ResultKPRPage() {
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <ReadOnlyField
                 label="Penghasilan Bulanan (Anda)"
-                value={formatCurrency(profile?.monthlyIncome)}
+                value="15.000.000"
               />
               <ReadOnlyField
                 label="Penghasilan Bulanan (Pasangan)"
-                value={formatCurrency(profile?.spouseMonthlyIncome)}
+                value="7.000.000"
               />
               <ReadOnlyField
                 label="Cicilan / Utang Berjalan per Bulan"
-                value={formatCurrency(profile?.otherMonthlyInstallment)}
+                value="2.000.000"
               />
               <ReadOnlyField
-                label="Status Simulasi"
-                value={simulation?.status ?? "Memuat..."}
+                label="Status Pekerjaan"
+                value="Karyawan Swasta"
                 select
               />
             </div>
             <div className="mt-4 grid grid-cols-2 gap-2 rounded-md bg-slate-50 p-3 sm:grid-cols-4">
+              <MiniStat label="Total Penghasilan" value="Rp22.000.000" />
+              <MiniStat label="Total Kewajiban" value="Rp2.000.000" />
+              <MiniStat label="DSR Saat Ini" value="9,1%" accent />
               <MiniStat
-                label="Total Penghasilan"
-                value={formatCurrency(
-                  result?.combinedIncome ?? profile?.monthlyIncome,
-                )}
-              />
-              <MiniStat
-                label="Total Kewajiban"
-                value={formatCurrency(profile?.otherMonthlyInstallment)}
-              />
-              <MiniStat
-                label="DSR Saat Ini"
-                value={result ? `${result.debtToIncomeRatio}%` : "-"}
-                accent
-              />
-              <MiniStat
-                label="Jumlah Pinjaman"
-                value={formatCurrency(
-                  result?.loanAmount ?? financing?.loanAmount,
-                )}
+                label="Sisa Kapasitas Cicilan"
+                value="Rp5.333.333"
+                detail="(24,2%)"
               />
             </div>
             <div className="mt-4 flex justify-end">
@@ -217,6 +180,7 @@ export default function ResultKPRPage() {
               </Button>
             </div>
           </div>
+
           <SectionRow
             index={2}
             title="Properti"
@@ -226,21 +190,13 @@ export default function ResultKPRPage() {
           />
           {openSection === 2 && (
             <div className="grid gap-3 bg-slate-50 px-5 py-4 sm:grid-cols-2">
-              <ReadOnlyField
-                label="ID Properti"
-                value={property?.propertyId?.toString() ?? "-"}
-              />
-              <ReadOnlyField
-                label="Harga Properti"
-                value={formatCurrency(property?.propertyPrice)}
-              />
-              <ReadOnlyField
-                label="Harga Pembiayaan"
-                value={formatCurrency(financing?.propertyPrice)}
-              />
-              <ReadOnlyField label="Status" value={simulation?.status ?? "-"} />
+              <ReadOnlyField label="Jenis Properti" value="Rumah" />
+              <ReadOnlyField label="Lokasi" value="Jakarta Selatan" />
+              <ReadOnlyField label="Harga Properti" value="900.000.000" />
+              <ReadOnlyField label="Status" value="Baru" />
             </div>
           )}
+
           <SectionRow
             index={3}
             title="Pembiayaan"
@@ -250,20 +206,12 @@ export default function ResultKPRPage() {
           />
           {openSection === 3 && (
             <div className="grid gap-3 bg-slate-50 px-5 py-4 sm:grid-cols-2">
-              <ReadOnlyField
-                label="Uang Muka"
-                value={formatCurrency(financing?.downPayment)}
-              />
-              <ReadOnlyField
-                label="Jumlah Pinjaman"
-                value={formatCurrency(financing?.loanAmount)}
-              />
-              <ReadOnlyField
-                label="Tenor"
-                value={financing ? `${financing.tenorYears} Tahun` : "-"}
-              />
+              <ReadOnlyField label="Uang Muka" value="90.000.000" />
+              <ReadOnlyField label="Jumlah Pinjaman" value="810.000.000" />
+              <ReadOnlyField label="Tenor" value="15 Tahun" />
             </div>
           )}
+
           <SectionRow
             index={4}
             title="Suku Bunga"
@@ -275,24 +223,10 @@ export default function ResultKPRPage() {
             <div className="grid gap-3 bg-slate-50 px-5 py-4 sm:grid-cols-2">
               <ReadOnlyField
                 label="Jenis Suku Bunga"
-                value={simulation?.interest?.interestScheme ?? "-"}
+                value="Fixed → Floating"
               />
-              <ReadOnlyField
-                label="Suku Bunga"
-                value={
-                  simulation?.interest?.fixedRate?.toString() ??
-                  simulation?.interest?.floatingRate?.toString() ??
-                  "-"
-                }
-              />
-              <ReadOnlyField
-                label="Masa Fixed Rate"
-                value={
-                  simulation?.interest?.fixedPeriodYears
-                    ? `${simulation.interest.fixedPeriodYears} Tahun`
-                    : "-"
-                }
-              />
+              <ReadOnlyField label="Suku Bunga" value="5,25%" />
+              <ReadOnlyField label="Masa Fixed Rate" value="3 Tahun" />
             </div>
           )}
         </section>
@@ -312,26 +246,22 @@ export default function ResultKPRPage() {
             <div className="grid grid-cols-2 divide-x divide-y divide-slate-200 sm:grid-cols-4 sm:divide-y-0">
               <Metric
                 label="Estimasi Cicilan Bulanan"
-                value={formatCurrency(result?.monthlyInstallment)}
-                detail="Dari backend"
+                value="Rp4.873.000"
+                detail="Fixed 3 Tahun"
                 icon={CircleHelp}
               />
               <Metric
                 label="Cicilan Setelah Floating"
-                value={formatCurrency(result?.floatingMonthlyInstallment)}
-                detail="Jika tersedia"
+                value="Rp5.612.000"
+                detail="Floating Tahun ke-4"
                 icon={CircleHelp}
               />
               <Metric
                 label="Jumlah Pinjaman"
-                value={formatCurrency(result?.loanAmount)}
+                value="Rp900.000.000"
                 icon={Info}
               />
-              <Metric
-                label="Tenor"
-                value={result ? `${result.tenorYears} Tahun` : "-"}
-                icon={CalendarDays}
-              />
+              <Metric label="Tenor" value="15 Tahun" icon={CalendarDays} />
             </div>
           </div>
 
@@ -398,6 +328,13 @@ export default function ResultKPRPage() {
           </div>
 
           <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+            <h2 className="text-sm font-semibold text-slate-500">
+              Estimasi Bunga
+            </h2>
+            <h1 className="mt-2 text-3xl font-bold text-slate-900">9.5%</h1>
+          </div>
+
+          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-bold">Analisis Risiko</h3>
               <CircleHelp className="size-3 text-slate-400" />
@@ -429,6 +366,7 @@ export default function ResultKPRPage() {
               <button
                 type="button"
                 className="text-[10px] font-bold text-[#ef2b1f]"
+                onClick={() => setSelectedStressCell("green")}
               >
                 Lihat Proyeksi Per Tahun →
               </button>
@@ -455,7 +393,6 @@ export default function ResultKPRPage() {
                 </p>
               </div>
             </div>
-            <TrendingUp className="hidden size-10 text-amber-400 sm:block" />
           </div>
         </section>
       </div>
@@ -489,6 +426,13 @@ export default function ResultKPRPage() {
           </div>
         </div>
       </footer>
+
+      {selectedStressCell && (
+        <StressScenarioModal
+          themeColor={selectedStressCell}
+          onClose={() => setSelectedStressCell(null)}
+        />
+      )}
     </main>
   );
 }
@@ -587,6 +531,7 @@ function RiskCard({
     orange: "bg-orange-50 text-orange-500",
     amber: "bg-amber-50 text-amber-500",
   };
+
   return (
     <div className="rounded-md border border-slate-100 p-3">
       <div className="flex items-center gap-2 text-[10px] font-semibold text-slate-600">
