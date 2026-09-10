@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { ArrowRight, ChevronDown, CircleAlert, CircleHelp, Info, ClipboardList, Home, RotateCcw, Save, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { LineChart } from "@derpdaderp/chartkit";
+import { LineChart, ProgressRing } from "@derpdaderp/chartkit";
 import { Button } from "@/components/ui/button";
 import Header from "../Components/Header";
 import Chart from "../Components/Chart";
@@ -111,10 +111,7 @@ export default function ResultKPRPage() {
           <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
             <p className="text-base font-bold">Financial Fit Indicator</p>
             <div className="mt-3 flex items-center gap-4">
-              <div className="flex size-30 shrink-0 flex-col items-center justify-center rounded-full border-4 border-emerald-500 text-center">
-                <strong className="text-3xl text-emerald-600">78</strong>
-                <span className="text-base text-slate-400">/100</span>
-              </div>
+              <ProgressRing value={72} theme="sunset" size={150} strokeWidth={10} showValue className="shrink-0" />
               <div>
                 <p className="text-base font-bold text-emerald-600">Lebih Sesuai</p>
                 <p className="mt-1 text-sm leading-4 text-slate-500">
