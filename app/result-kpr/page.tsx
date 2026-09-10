@@ -125,15 +125,17 @@ export default function ResultKPRPage() {
               title="Income to Expense Ratio"
               description="Expense and income distribution"
               data={[
-                { source: "Expense", visits: 40 },
-                { source: "Income", visits: 60 },
+                { source: "Expense", values: 40 },
+                { source: "Income", values: 60 },
               ]}
+              size={140}
               centerContent={
                 <div className="text-center">
                   <div className="text-lg font-bold">40 / 60</div>
                   <div className="text-xs text-slate-500">Expense / Income</div>
                 </div>
               }
+              legendPosition="right"
             />
             <p className="ml-4 self-center text-slate-500 text-sm">
               Rasio penghasilan dan pengeluaran anda cukup baik. Bila anda mengambil program KPR ini, anda tidak berisiko terkena &quot;Credit

@@ -1,13 +1,13 @@
 "use client";
 
-import { BarChart3, Bell, LogOut, Settings, UsersRound, X } from "lucide-react";
+import { BarChart3, House, LogOut, UsersRound, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 const navigation = [
   { label: "Dashboard", icon: BarChart3 },
   { label: "Daftar Nasabah", icon: UsersRound },
-  { label: "Notifikasi", icon: Bell, count: 2 },
-  { label: "Pengaturan", icon: Settings },
+  { label: "Daftar Properti", icon: House },
 ];
 
 export default function Sidebar({
@@ -27,20 +27,24 @@ export default function Sidebar({
         "fixed inset-y-0 left-0 z-40 flex w-52.5 flex-col bg-[#09223d] px-4 py-5 text-white transition-transform lg:translate-x-0",
         mobileMenuOpen ? "translate-x-0" : "-translate-x-full",
       )}>
-      <div className="flex items-start justify-between px-1">
-        <div>
-          <p className="text-xl font-bold tracking-tight">
-            JakLoan<span className="text-[#18bd8b]">•</span>
-          </p>
-          <p className="text-sm tracking-[0.19em] text-[#a9b9cc]">BY BANK JAKARTA</p>
-        </div>
+      <div className="relative items-start px-1">
+        <Image
+          src="/jakloan-logo.png"
+          alt="JakLoan"
+          width={180}
+          height={48}
+          sizes="180px"
+          className="bg-white p-2 h-auto w-full object-contain object-left"
+          priority
+        />
+        <div className="-mt-5 ml-2 text-[9px] font-medium tracking-[0.24em] text-black">FOR INTERNAL</div>
         <button type="button" onClick={onClose} className="text-slate-300 lg:hidden" aria-label="Tutup menu">
           <X className="size-5" />
         </button>
       </div>
 
       <nav className="mt-8 space-y-2" aria-label="Navigasi utama">
-        {navigation.map(({ label, icon: Icon, count }) => (
+        {navigation.map(({ label, icon: Icon }) => (
           <button
             key={label}
             type="button"
@@ -51,7 +55,6 @@ export default function Sidebar({
             )}>
             <Icon className="size-4" strokeWidth={1.8} />
             <span className="flex-1">{label}</span>
-            {count && <span className="flex size-4 items-center justify-center rounded-full bg-[#ff464d] text-sm font-bold text-white">{count}</span>}
           </button>
         ))}
       </nav>

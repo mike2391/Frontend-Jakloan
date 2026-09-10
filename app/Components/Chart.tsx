@@ -2,30 +2,27 @@ import { DonutChart } from "@derpdaderp/chartkit";
 
 type ChartDatum = {
   source: string;
-  visits: number;
+  values: number;
 };
 
 const defaultData: ChartDatum[] = [
-  { source: "Organic", visits: 42 },
-  { source: "Referral", visits: 28 },
-  { source: "Social", visits: 18 },
-  { source: "Other", visits: 12 },
+  { source: "", values: 1 },
+  { source: "", values: 1 },
+  { source: "", values: 1 },
+  { source: "", values: 1 },
 ];
 
 type ChartProps = {
   data?: ChartDatum[];
   title?: string;
+  size?: number;
   description?: string;
   centerContent?: React.ReactNode;
+  legendPosition?: "right" | "bottom";
 };
 
-export default function Chart({
-  data = defaultData,
-  title = "Traffic Sources",
-  description = "Visitor distribution by source",
-  centerContent,
-}: ChartProps) {
-  const totalVisits = data.reduce((total, item) => total + item.visits, 0);
+export default function Chart({ data = defaultData, title = "", size = 140, description = "", centerContent, legendPosition = "right" }: ChartProps) {
+  const totalvalues = data.reduce((total, item) => total + item.values, 0);
 
   return (
     <section className="w-full max-w-md " aria-labelledby="traffic-sources-title">
@@ -40,19 +37,19 @@ export default function Chart({
 
       <DonutChart
         data={data}
-        dataKey="visits"
+        dataKey="values"
         labelKey="source"
         theme="sunset"
-        size={140}
+        size={size}
         innerRadius={0.62}
-        legendPosition="right"
+        legendPosition={legendPosition}
         showLegend
-        format={(value) => `${value}%`}
+        format={(value) => `${value}`}
         centerContent={
           centerContent ?? (
             <div className="text-center">
-              <div className="text-2xl font-bold">{totalVisits}</div>
-              <div className="text-xs text-slate-500">Total visits</div>
+              <div className="text-2xl font-bold">{totalvalues}</div>
+              <div className="text-xs text-slate-500">Total values</div>
             </div>
           )
         }
